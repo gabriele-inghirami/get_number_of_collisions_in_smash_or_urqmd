@@ -1,0 +1,1 @@
+# get_number_of_collisions_in_smash_or_urqmd
