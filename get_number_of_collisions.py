@@ -18,10 +18,10 @@ nt = int(tmax/dt)
 times = np.linspace(dt/2.,tmax+dt/2,num=nt)
 
 events = 0
-decays = np.zeros(nt,dytpe=np.float64)
-strings = np.zeros(nt,dytpe=np.float64)
-elastic = np.zeros(nt,dytpe=np.float64)
-other = np.zeros(nt,dytpe=np.float64)
+decays = np.zeros(nt,dtype=np.float64)
+strings = np.zeros(nt,dtype=np.float64)
+elastic = np.zeros(nt,dtype=np.float64)
+other = np.zeros(nt,dtype=np.float64)
 
 file_kind="unset"
 
@@ -41,13 +41,13 @@ def check_file_type(inputfile,file_kind):
 
     initium = infile.readfile().split()[0]
     if initium == "-1":
-        if ( file_kind == "unset" ) or ( file_kind == "urqmd" )):
+        if (( file_kind == "unset" ) or ( file_kind == "urqmd" )):
             return True, "urqmd"
         else:
             # the inputfile must be all of the same type of the first one
             return False, "mismatch"
     elif initium == "#!OSCAR2013":
-        if ( file_kind == "unset" ) or ( file_kind == "smash" )):
+        if (( file_kind == "unset" ) or ( file_kind == "smash" )):
             return True, "smash"
         else:
             # the inputfile must be all of the same type of the first one
@@ -84,6 +84,30 @@ def extract_data_smash(inputfile):
             events += 1
     return 
 
+def extract_data_urqmd(inputfile):
+    # the file should be already open
+    events += 1 #the event flag is "-1", but it has been already read by check_file_type
+    for line in infile:
+        stuff=line.split()
+        if(len(stuff)!=9):
+            continue
+        if stuff[0] == "-1":
+            continue
+        ptype = int(stuff[2]) 
+        t = float(infile.readline().split()[4])
+        if t >= tmax:
+            continue
+        h = int(math.floor(t/dt))
+        if ((ptype == 13) or (ptype == 17) or (ptype == 19) or (ptype == 22) or (ptype == 26) or (ptype == 28)):
+            elastic[h] += 1
+        elif ptype == 20:
+            decays[h] += 1
+        elif ((ptype == 15) and (ptype == 23) or (ptype == 24) or (ptype == 27) or (ptype == 28)): 
+            strings[h] += 1
+        else:
+            other[h] += 1
+    return 
+
 if (__name__ == "__main__" ):
     if (len(sys.argv)<3):
         print ('Syntax: ./get_number_of_collisions.py <output file name> <smash collision file 1> [smash collision file 2] ...')
@@ -100,7 +124,10 @@ if (__name__ == "__main__" ):
             accepted, file_kind = check_file_type(inputfile,file_kind)
             if accepted:
                 number_of_read_files += 1
-                extract_data_smash(inputfile)
+                if file_kind == "smash":
+                    extract_data_smash(inputfile)
+                else:
+                    extract_data_urqmd(inputfile)
                 reference_file_kind = file_kind
             else:
                 if file_kind == "mismatch":
