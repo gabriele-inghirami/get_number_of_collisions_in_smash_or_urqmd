@@ -108,7 +108,7 @@ def extract_data_urqmd(ifile):
             continue
         h = int(math.floor((t-tmin)/dt))
         # if you change the process types, please, remeber to update the legend in the header of the output file
-        if ((ptype == 13) or (ptype == 17) or (ptype == 19) or (ptype == 22) or (ptype == 26) or (ptype == 28)):
+        if ((ptype == 13) or (ptype == 17) or (ptype == 19) or (ptype == 22) or (ptype == 26)):
             elastic[h] += 1
         elif ptype == 20:
             decays[h] += 1
@@ -168,7 +168,7 @@ outf.write("# Process types considered: \n")
 if file_kind == "smash":
     outf.write("# elastic: 1  *  decays: 5  *  strings: >=41,<=46\n")
 elif file_kind == "urqmd":
-    outf.write("# elastic: 13,17,19,22,26,28  *  decays: 20  *  strings: 15,23,24,27,28\n")
+    outf.write("# elastic: 13,17,19,22,26  *  decays: 20  *  strings: 15,23,24,27,28\n")
 outf.write("# columns: 1: time [fm]     2: dN/dt elastic     3: dN/dt decays     4: dN/dt strings     6: dN/dt other\n")
 for h in range(nt):
     outf.write(tf.format(times[h])+sp+ff.format(elastic[h]/(events*dt))+sp+ff.format(decays[h]/(events*dt))+sp+ff.format(strings[h]/(events*dt))+sp+ff.format(other[h]/(events*dt))+"\n")
