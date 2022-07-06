@@ -61,7 +61,7 @@ do
         infile=$rundir/in_$i\_$k
         cp $workdir/inputfile_$ion_run $infile
 
-        sed -i -e "s/rsd 0/rsd $rnds/" infile
+        sed -i -e "s/rsd 0/rsd $rnds/" $infile
 
         export ftn09=$infile
         export ftn15=$rundir/out_$i\_$k.f15
