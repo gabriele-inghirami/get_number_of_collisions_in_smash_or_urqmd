@@ -108,7 +108,7 @@ def extract_data_urqmd(ifile):
             continue
         h = int(math.floor((t-tmin)/dt))
         # if you change the process types, please, remeber to update the legend in the header of the output file
-        if ((ptype == 13) or (ptype == 17) or (ptype == 19) or (ptype == 22) or (ptype == 26)):
+        if ((ptype == 13) or (ptype == 17) or (ptype == 19) or (ptype == 22) or (ptype == 26) or (ptype == 38)):
             elastic[h] += 1
         elif ptype == 20:
             decays[h] += 1
