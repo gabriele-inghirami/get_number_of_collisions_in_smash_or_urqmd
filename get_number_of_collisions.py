@@ -154,7 +154,6 @@ def extract_data_urqmd(ifile):
             events_in_file += 1
             continue
         ptype = int(stuff[2]) 
-        print(str(stuff[:]))
         t = float(stuff[4])
         n_incoming = int(stuff[0])
         if t >= tmax:
