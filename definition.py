@@ -29,10 +29,26 @@ ptype_urqmd = {
         37:(27,"Danielewicz forward delay (MM->M')"),
         38:(28,"MM elastic scattering"),
         39:(29,"BBar inelastic scattering (no annihilation)"),
-        80:(30,"Periodic wall: Particle crosses the box wall"),
-        81:(31,"Solid wall: Particle reflects off the box wall"),
-        91:(32,"Fluidization"),
-        96:(33,"Particlization")
+        40:(30,"Undocumented/unknown"),
+        42:(31,"Undocumented/unknown"),
+        43:(32,"Undocumented/unknown"),
+        55:(33,"Undocumented/unknown"),
+        57:(34,"Undocumented/unknown"),
+        58:(35,"Undocumented/unknown"),
+        59:(36,"Undocumented/unknown"),
+        60:(37,"Undocumented/unknown"),
+        61:(38,"Undocumented/unknown"),
+        62:(39,"Undocumented/unknown"),
+        63:(40,"Undocumented/unknown"),
+        64:(41,"Undocumented/unknown"),
+        80:(42,"Periodic wall: Particle crosses the box wall"),
+        81:(43,"Solid wall: Particle reflects off the box wall"),
+        91:(44,"Fluidization"),
+        96:(45,"Particlization"),
+        -2:(46,"Undocumented/unknown"),
+        -3:(47,"Undocumented/unknown"),
+        -5:(48,"Undocumented/unknown"),
+        -6:(49,"Undocumented/unknown")
         }
 
 n_ptype_urqmd=len(ptype_urqmd)
@@ -168,7 +184,7 @@ def get_hadron_info_urqmd(pid,charge):
     else:
         is_nucleon=0
 
-    if ((abs_pid > 1) and (abd_pid < 17)):
+    if ((abs_pid > 1) and (abs_pid < 17)):
         is_N_star=1
     else:
         is_N_star=0

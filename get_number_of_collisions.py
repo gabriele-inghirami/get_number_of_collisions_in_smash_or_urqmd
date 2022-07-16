@@ -48,28 +48,28 @@ sp="    "
 # if we want to print debugging messages or not (0=none,1=advancement infos)
 verbose = 1
 
-def count_based_on_hadron_property(had_prop):
-    if (had_prop["is_stable"]>1):
+def count_based_on_hadron_property(had_prop,h):
+    if (had_prop[had_prop_dict["is_stable"]]>1):
         two_stable[h] += 1
-    elif(had_prop["is_stable"]==1):
+    elif(had_prop[had_prop_dict["is_stable"]]==1):
         one_stable[h] += 1
     else:
         no_stable[h] += 1
-    if (had_prop["is_antiparticle"]>0):
+    if (had_prop[had_prop_dict["is_antiparticle"]]>0):
         min_one_anti[h] +=1
-    if (had_prop["is_baryon"]>1):
+    if (had_prop[had_prop_dict["is_baryon"]]>1):
         BaBa[h] += 1
-    if ((had_prop["is_baryon"]>0) and (had_prop["is_meson"]>0)):
+    if ((had_prop[had_prop_dict["is_baryon"]]>0) and (had_prop[had_prop_dict["is_meson"]]>0)):
         MeBa[h] += 1
-    if (had_prop["is_meson"]>=2):
+    if (had_prop[had_prop_dict["is_meson"]]>=2):
         MeMe[h] += 1
-    if (had_prop["is_nucleon"]>1):
+    if (had_prop[had_prop_dict["is_nucleon"]]>1):
         NuNu[h] +=1
-    if ((had_prop["is_nucleon"]>0) and (had_prop["is_pion"]>0)):
+    if ((had_prop[had_prop_dict["is_nucleon"]]>0) and (had_prop[had_prop_dict["is_pion"]]>0)):
         Nupi[h] +=1
-    if (had_prop["is_pion"]>1):
+    if (had_prop[had_prop_dict["is_pion"]]>1):
         pipi[h] +=1
-    if ((had_prop["is_nucleon"]>0) and (had_prop["is_pion"]>0)):
+    if ((had_prop[had_prop_dict["is_nucleon"]]>0) and (had_prop[had_prop_dict["is_pion"]]>0)):
         Nupi[h] +=1
 
 
@@ -129,15 +129,15 @@ def extract_data_smash(ifile):
             else:
                other[h] += 1
 
-        detailed[h,ptype_smash[ptype][0]]+=1
+            detailed[h,ptype_smash[ptype][0]]+=1
 
-        had_prop = np.zeros(7,dtype=np.int32)
-        for had in range(n_incoming):
-            stuff = ifile.readline().split()
-            pid = int(stuff[9])
-            had_prop += get_hadron_info_smash(pid) #the function returns a list which is automatically converted into np array
+            had_prop = np.zeros(7,dtype=np.int32)
+            for had in range(n_incoming):
+                stuff = ifile.readline().split()
+                pid = stuff[9]
+                had_prop += get_hadron_info_smash(pid) #the function returns a list which is automatically converted into np array
 
-        count_based_on_hadron_property(had_prop)
+            count_based_on_hadron_property(had_prop,h)
 
         if stuff[1] == "event":
             events_in_file += 1
@@ -154,6 +154,7 @@ def extract_data_urqmd(ifile):
             events_in_file += 1
             continue
         ptype = int(stuff[2]) 
+        print(str(stuff[:]))
         t = float(stuff[4])
         n_incoming = int(stuff[0])
         if t >= tmax:
@@ -169,7 +170,7 @@ def extract_data_urqmd(ifile):
         else:
             other[h] += 1
 
-        detailed[h,ptype_urmd[ptype][0]]+=1
+        detailed[h,ptype_urqmd[ptype][0]]+=1
 
         had_prop = np.zeros(7,dtype=np.int32)
         for had in range(n_incoming):
@@ -178,7 +179,7 @@ def extract_data_urqmd(ifile):
             charge = int(stuff[12])
             had_prop += get_hadron_info_urqmd(pid,charge) #the function returns a list which is automatically converted into np array
 
-        count_based_on_hadron_property(had_prop)
+        count_based_on_hadron_property(had_prop,h)
 
     return events_in_file 
 
@@ -189,7 +190,7 @@ if (len(sys.argv)<4):
 outfile=sys.argv[1]
 label_header=sys.argv[2]
 
-if os.path.exists(outifile):
+if os.path.exists(outfile):
     print("Output file "+outfile+" already exists, I will not overwrite it. I stop here.")
     sys.exit(1)
 else:
