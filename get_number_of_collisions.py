@@ -1,14 +1,16 @@
 #!/usr/bin/python3
 
 # it reads the hadron data in the smash collision files, extracts
-# the time and the type of collisions and saves a histogram on a file
+# the time and the type of collisions and saves the results as .pickle darchive 
 # the program automatically detects if the file is
 # a .f15 urqmd or oscar2013 smash collision file
 
 import math
 import numpy as np
 import os
+import pickle
 import sys
+from definition import *
 
 # time resolution of the histograms
 dt = 0.5
@@ -24,6 +26,18 @@ strings = np.zeros(nt,dtype=np.float64)
 elastic = np.zeros(nt,dtype=np.float64)
 other = np.zeros(nt,dtype=np.float64)
 
+two_stable = np.zeros(nt,dtype=np.float64)
+one_stable = np.zeros(nt,dtype=np.float64)
+no_stable = np.zeros(nt,dtype=np.float64)
+min_one_anti = np.zeros(nt,dtype=np.float64)
+BaBa = np.zeros(nt,dtype=np.float64)
+MeBa = np.zeros(nt,dtype=np.float64)
+MeMe = np.zeros(nt,dtype=np.float64)
+NuNu = np.zeros(nt,dtype=np.float64)
+Nupi = np.zeros(nt,dtype=np.float64)
+pipi = np.zeros(nt,dtype=np.float64)
+NuNustar = np.zeros(nt,dtype=np.float64)
+
 file_kind="unset"
 
 # format for quantities in output file
@@ -33,6 +47,31 @@ sp="    "
 
 # if we want to print debugging messages or not (0=none,1=advancement infos)
 verbose = 1
+
+def count_based_on_hadron_property(had_prop):
+    if (had_prop["is_stable"]>1):
+        two_stable[h] += 1
+    elif(had_prop["is_stable"]==1):
+        one_stable[h] += 1
+    else:
+        no_stable[h] += 1
+    if (had_prop["is_antiparticle"]>0):
+        min_one_anti[h] +=1
+    if (had_prop["is_baryon"]>1):
+        BaBa[h] += 1
+    if ((had_prop["is_baryon"]>0) and (had_prop["is_meson"]>0)):
+        MeBa[h] += 1
+    if (had_prop["is_meson"]>=2):
+        MeMe[h] += 1
+    if (had_prop["is_nucleon"]>1):
+        NuNu[h] +=1
+    if ((had_prop["is_nucleon"]>0) and (had_prop["is_pion"]>0)):
+        Nupi[h] +=1
+    if (had_prop["is_pion"]>1):
+        pipi[h] +=1
+    if ((had_prop["is_nucleon"]>0) and (had_prop["is_pion"]>0)):
+        Nupi[h] +=1
+
 
 def check_file_type(inputfile,file_kind):
     try:
@@ -76,6 +115,7 @@ def extract_data_smash(ifile):
             if t >= tmax:
                 continue
             h = int(math.floor((t-tmin)/dt))
+            n_incoming = int(stuff[3])
             # if you change the process types, please, remeber to update the legend in the header of the output file
             if ptype == 1:
                elastic[h] += 1
@@ -88,6 +128,17 @@ def extract_data_smash(ifile):
                    print("Warning, failed string collision.")
             else:
                other[h] += 1
+
+        detailed[h,ptype_smash[ptype][0]]+=1
+
+        had_prop = np.zeros(7,dtype=np.int32)
+        for had in range(n_incoming):
+            stuff = ifile.readline().split()
+            pid = int(stuff[9])
+            had_prop += get_hadron_info_smash(pid) #the function returns a list which is automatically converted into np array
+
+        count_based_on_hadron_property(had_prop)
+
         if stuff[1] == "event":
             events_in_file += 1
     return events_in_file
@@ -96,7 +147,7 @@ def extract_data_urqmd(ifile):
     events_in_file = 1 #the event flag is "-1", but it has been already read by check_file_type
     # the file should be already open
     for line in ifile:
-        stuff=line.split()
+        stuff = line.split()
         if(len(stuff)!=9):
             continue
         if stuff[0] == "-1":
@@ -104,6 +155,7 @@ def extract_data_urqmd(ifile):
             continue
         ptype = int(stuff[2]) 
         t = float(stuff[4])
+        n_incoming = int(stuff[0])
         if t >= tmax:
             continue
         h = int(math.floor((t-tmin)/dt))
@@ -116,18 +168,33 @@ def extract_data_urqmd(ifile):
             strings[h] += 1
         else:
             other[h] += 1
+
+        detailed[h,ptype_urmd[ptype][0]]+=1
+
+        had_prop = np.zeros(7,dtype=np.int32)
+        for had in range(n_incoming):
+            stuff = ifile.readline().split()
+            pid = int(stuff[10])
+            charge = int(stuff[12])
+            had_prop += get_hadron_info_urqmd(pid,charge) #the function returns a list which is automatically converted into np array
+
+        count_based_on_hadron_property(had_prop)
+
     return events_in_file 
 
 if (len(sys.argv)<4):
-    print ('Syntax: ./get_number_of_collisions.py <output file name> <output file header info> <collision file 1> [collision file 2] ...')
+    print ('Syntax: ./get_number_of_collisions.py <output file> <output file header info> <collision file 1> [collision file 2] ...')
     sys.exit(1)
 
-if os.path.exists(sys.argv[1]):
-    print("Output file "+sys.argv[1]+" already exists, I will not overwrite it. I stop here.")
+outfile=sys.argv[1]
+label_header=sys.argv[2]
+
+if os.path.exists(outifile):
+    print("Output file "+outfile+" already exists, I will not overwrite it. I stop here.")
     sys.exit(1)
 else:
-    if os.path.exists(sys.argv[2]):
-        print("The header of the output file "+sys.argv[2]+" is also the name of a collision file.")
+    if os.path.exists(label_header):
+        print("The header of the output file "+label_header+" is also the name of a collision file.")
         print("Probably this is not what you want. The header file can be also a empty string.")
         sys.exit(1)
     
@@ -139,8 +206,12 @@ for infile in sys.argv[3:]:
         if verbose > 0:
             print("Reading file "+infile)
         if file_kind == "smash":
+            if (number_of_read_files == 1):
+                detailed=np.zeros((nt,n_ptype_smash),dtype=np.float64)
             events += extract_data_smash(file_handler)
         else:
+            if (number_of_read_files == 1):
+                detailed=np.zeros((nt,n_ptype_urqmd),dtype=np.float64)
             events += extract_data_urqmd(file_handler)
         reference_file_kind = file_kind
     else:
@@ -159,17 +230,8 @@ if number_of_read_files == 0:
     
 # now we print the results
 if verbose > 0:
-    print("Writing the results in "+sys.argv[1])
-outf = open(sys.argv[1],"w")
-outf.write("# "+sys.argv[2]+"\n")
-outf.write("# Data from "+file_kind+" simulations\n")
-outf.write("# Number of events: "+str(events)+"\n")
-outf.write("# Process types considered: \n")
-if file_kind == "smash":
-    outf.write("# elastic: 1  *  decays: 5  *  strings: >=41,<=46\n")
-elif file_kind == "urqmd":
-    outf.write("# elastic: 13,17,19,22,26,38  *  decays: 20  *  strings: 15,23,24,27,28\n")
-outf.write("# columns: 1: time [fm]     2: dN/dt elastic     3: dN/dt decays     4: dN/dt strings     6: dN/dt other\n")
-for h in range(nt):
-    outf.write(tf.format(times[h])+sp+ff.format(elastic[h]/(events*dt))+sp+ff.format(decays[h]/(events*dt))+sp+ff.format(strings[h]/(events*dt))+sp+ff.format(other[h]/(events*dt))+"\n")
-outf.close()
+    print("Writing the results in "+outfile)
+    print("Warning, you are advised to take note of the commit number of the repository that you used to produce these results.")
+with open(outfile,"wb") as outf:
+    pickle.dump((label_header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
+                 min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar),outf)

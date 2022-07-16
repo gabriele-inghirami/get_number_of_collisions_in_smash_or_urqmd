@@ -11,93 +11,63 @@ sp="    "
 # if 0: only error messages, if > 0: progress messages
 verbose=1
 
-N_input_files=len(sys.argv)-2
+N_args=len(sys.argv)
+N_input_files=N_args-2
 
 if(N_input_files<2):
-   print('Syntax: ./combine_results.py <outputfile> <inputfile 1> <inputfile 2> ... <inputfile n>')
+   print('Syntax: ./combine_results.py <outputfile> <inputfile 1> <inputfile 2> ... [inputfile n]')
    print("(The minimum number of input files is 2)")
    sys.exit(1)
 
 outputfile=sys.argv[1]
 print("Outputfile will be: "+outputfile+"\n")
 
-inputfiles=[]
-times=[]
+with open(sys.argv[2],"rb") as infile:
+    data = pickle.load(infile)
 
-for i in range(2,N_input_files+1):
+label_header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
+        min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar = data[:]
+
+for fi in range(3,N_args):
     if verbose > 0:
-        print("Add to input: "+sys.argv[i]+"\n")
-    inputfiles.append(sys.argv[i])
-
-datas = open(inputfiles[0],"r")
-if verbose > 0:
-    print("Opened: "+inputfiles[0]+"\n")
-
-
-header1=datas.readline()
-simtype=header.split()[1]
-
-header2=datas.readline()
-datas.readline()
-header4=datas.readline()
-header5=datas.readline()
-header6=datas.readline()
-
-
-for line in datas:
-    stuff=line.split()
-    times.append(float(stuff[0]))
-
-date1.close()
-
-nt=len(times)
-dt=float(times[1])-float(times[0])
-
-decays = np.zeros(nt,dtype=np.float64)
-strings = np.zeros(nt,dtype=np.float64)
-elastic = np.zeros(nt,dtype=np.float64)
-other = np.zeros(nt,dtype=np.float64)
-
-t=np.array(times,dtype=np.float64)
-
-total_events = 0
-
-for fi in range(0,N_input_files):
-    if verbose > 0:
-        print("Opening: "+inputfiles[fi]+"\n")
-    datas = open(inputfiles[fi],"r")
-    if datas.readline().split()[1] != simtype:
-        print("Error, reference file is "+simtype+", but in "+inputfiles[fi]+" I found "+datas.readline().split()[1]+"!")
-        print("I skip this file.")
-    datas.readline() # we skip a row
-    events = int(datas.readline().split()[4])
-    total_events += events
-    for i in range(3):
-        datas.readline()
-    for h in range(nt):
-        entry_elastic,entry_decay,entry_string,entry_other=float(datas.readline.split()[1:])*dt*events
-        elastic[h] += entry_elastic
-        decays[h] += entry_decay
-        strings[h] += entry_string
-        other[h] += entry_other
-    datas.close()
-
-# now we print the results
-
-# format for quantities in output file
-tf='{:7.3f}'
-ff='{:14.10e}'
-sp="    "
+        print("Opening: "+sys.argv[fi]+"\n")
+    try:
+        with open(sys.argv[fi],"rb") as infile:
+            data = pickle.load(infile)
+    except:
+        print("Error in reading "+sys.argv[fi])
+        continue
+    label_header_new,file_kind_new,events_new,dt_new,times_new,elastic_new,decays_new,strings_new,other_new,\
+    detailed_new,two_stable_new,one_stable_new,no_stable_new,min_one_anti_new,BaBa_new,MeBa_new,MeMe_new,\
+    NuNu_new,Nupi_new,pipi_new,NuNustar_new = data[:]
+    if ((label_header_new != label_header) or (file_kind_new != file_kind) or (dt_new != dt) or\
+        (times_new != times)):
+        print("Warning, I skip input file "+sys.argv[fi])
+        print("because it does not match the fundamental characteristics of the first file")
+        continue
+    events += events_new
+    elastic += elastic_new
+    decays += decays_new
+    strings += strings_new
+    other += other_new
+    detailed += detailed_new
+    two_stable += two_stable_new
+    one_stable += one_stable_new
+    no_stable += no_stable_new
+    min_one_anti += min_one_anti_new
+    BaBa += BaBa_new
+    MeBa += MeBa_new
+    MeMe += MeME_new
+    NuNu += NuNu_new
+    Nupi += Nupi_new
+    pipi += pipi_new
+    NuNustar += NuNustar_new
 
 if verbose > 0:
     print("Writing the results in "+outputfile)
-outf = open(outputfile,"w")
-outf.write(header1+"\n")
-outf.write(header2+"\n")
-outf.write("# Number of events: "+str(total_events)+"\n")
-outf.write(header4+"\n")
-outf.write(header5+"\n")
-outf.write(header6+"\n")
-for h in range(nt):
-    outf.write(tf.format(t[h])+sp+ff.format(elastic[h]/(total_events*dt))+sp+ff.format(decays[h]/(total_events*dt))+sp+ff.format(strings[h]/(total_events*dt))+sp+ff.format(other[h]/(total_events*dt))+"\n")
-outf.close()
+    print("Warning, you are advised to take note of the commit number of the repository that you used to produce these results.")
+with open(outputfile,"wb") as outf:
+    pickle.dump((label_header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
+                 min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar),outf)
+
+
