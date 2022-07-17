@@ -10,6 +10,15 @@ import numpy as np
 import os
 import pickle
 import sys
+from definition import *
+
+# if > 0 it prints messages about the advancement status of the program
+verbose = 1
+
+# format for quantities in output file
+tf='{:7.3f}'
+ff='{:14.10e}'
+sp="    "
 
 if (len(sys.argv)<3):
     print ('Syntax: ./print_txt.py <pickled data> <output directory>')
@@ -32,6 +41,8 @@ with open(infile,"rb") as inputfile:
 label_header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
         min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar = data[:]
     
+nt = len(times)
+
 # now we print the results
 os.mkdir(outdir) # in the case of already existing directory, we would have stopped at the beginning
 collision_type_outfile=outdir+"/collision_types.dat"
@@ -62,18 +73,18 @@ outf.write("# Number of events: "+str(events)+"\n")
 outf.write("# Columns:\n# 1 time [fm]\n")
 if file_kind == "smash":
     for v in ptype_smash.values():
-        outf.write("# "+'{2d}'.format(v[0])+" dN/dt"+v[1]+"\n")
+        outf.write("# "+'{:2d}'.format(v[0])+" dN/dt"+v[1]+"\n")
 elif file_kind == "urqmd":
     for v in ptype_urqmd.values():
-        outf.write("# "+'{2d}'.format(v[0])+" dN/dt"+v[1]+"\n")
+        outf.write("# "+'{:2d}'.format(v[0])+" dN/dt"+v[1]+"\n")
 for h in range(nt):
     outf.write(tf.format(times[h]))
     if file_kind == "smash":
         for v in ptype_smash.values():
-            outf.write(sp+ff.format(detailed[h,ptype_smash[v[0]]]/den))
+            outf.write(sp+ff.format(detailed[h,v[0]]/den))
     else:
-        for v in ptype_urmqd.values():
-            outf.write(sp+ff.format(detailed[h,ptype_urmd[v[0]]]/den))
+        for v in ptype_urqmd.values():
+            outf.write(sp+ff.format(detailed[h,v[0]]/den))
     outf.write("\n")
 outf.close()
 
@@ -101,17 +112,17 @@ outf.write("# Note: pion- are not considered antiparticles.\n")
 outf.write("# Note: Stable particles are: p, n, K, eta, eta', omega, phi, Lambda, Xi, Omega and their antiparticles.\n")
 for h in range(nt):
     outf.write(tf.format(times[h]))
-    outf.write(sp+tt.format(two_stable[h]/den))
-    outf.write(sp+tt.format(one_stable[h]/den))
-    outf.write(sp+tt.format(no_stable[h]/den))
-    outf.write(sp+tt.format(min_one_anti[h]/den))
-    outf.write(sp+tt.format(BaBa[h]/den))
-    outf.write(sp+tt.format(MeBa[h]/den))
-    outf.write(sp+tt.format(MeMe[h]/den))
-    outf.write(sp+tt.format(MeMe[h]/den))
-    outf.write(sp+tt.format(NuNu[h]/den))
-    outf.write(sp+tt.format(Nupi[h]/den))
-    outf.write(sp+tt.format(pipi[h]/den))
-    outf.write(sp+tt.format(NuNustar[h]/den))
+    outf.write(sp+ff.format(two_stable[h]/den))
+    outf.write(sp+ff.format(one_stable[h]/den))
+    outf.write(sp+ff.format(no_stable[h]/den))
+    outf.write(sp+ff.format(min_one_anti[h]/den))
+    outf.write(sp+ff.format(BaBa[h]/den))
+    outf.write(sp+ff.format(MeBa[h]/den))
+    outf.write(sp+ff.format(MeMe[h]/den))
+    outf.write(sp+ff.format(MeMe[h]/den))
+    outf.write(sp+ff.format(NuNu[h]/den))
+    outf.write(sp+ff.format(Nupi[h]/den))
+    outf.write(sp+ff.format(pipi[h]/den))
+    outf.write(sp+ff.format(NuNustar[h]/den))
     outf.write("\n")
 outf.close()

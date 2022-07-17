@@ -40,11 +40,6 @@ NuNustar = np.zeros(nt,dtype=np.float64)
 
 file_kind="unset"
 
-# format for quantities in output file
-tf='{:7.3f}'
-ff='{:14.10e}'
-sp="    "
-
 # if we want to print debugging messages or not (0=none,1=advancement infos)
 verbose = 1
 
@@ -61,7 +56,7 @@ def count_based_on_hadron_property(had_prop,h):
         BaBa[h] += 1
     if ((had_prop[had_prop_dict["is_baryon"]]>0) and (had_prop[had_prop_dict["is_meson"]]>0)):
         MeBa[h] += 1
-    if (had_prop[had_prop_dict["is_meson"]]>=2):
+    if (had_prop[had_prop_dict["is_meson"]]>1):
         MeMe[h] += 1
     if (had_prop[had_prop_dict["is_nucleon"]]>1):
         NuNu[h] +=1
@@ -69,8 +64,8 @@ def count_based_on_hadron_property(had_prop,h):
         Nupi[h] +=1
     if (had_prop[had_prop_dict["is_pion"]]>1):
         pipi[h] +=1
-    if ((had_prop[had_prop_dict["is_nucleon"]]>0) and (had_prop[had_prop_dict["is_pion"]]>0)):
-        Nupi[h] +=1
+    if ((had_prop[had_prop_dict["is_nucleon"]]>0) and (had_prop[had_prop_dict["is_N_star"]]>0)):
+        NuNustar[h] +=1
 
 
 def check_file_type(inputfile,file_kind):

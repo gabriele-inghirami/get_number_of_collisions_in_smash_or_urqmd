@@ -19,22 +19,36 @@ set xrange[-3.5:200.5]
 set yrange [0.001:3000]
 set mxtics 10
 
+sdir="../smash_all_data/"
+udir="../urqmd_all_data/"
+
+s8dir=sdir."8_7/"
+s17dir=sdir."17_3/"
+s200dir=sdir."200/"
+u8dir=udir."8_7/"
+u17dir=udir."17_3/"
+u200dir=udir."200/"
+
+cf="collision_types.dat"
+pf="process_types.dat"
+hf="hadron_types.dat"
+
 set out "Ecm_8_7_ylog.eps"
 set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = 8.7 GeV"
-sf="../smash_runs2/smash_8_7.dat"
-uf="../urqmd_runs2/urqmd_8_7.dat"
+sf=s8dir.cf
+uf=u8dir.cf
 plot sf u 1:2 w l ls 1 t "SMASH elastic", sf u 1:3 w l ls 2 t "SMASH decays", sf u 1:4 w l ls 3 t "SMASH strings", sf u 1:5 w l ls 4 t "SMASH other", uf u 1:2 w l ls 5 t "UrQMD elastic", uf u 1:3 w l ls 6 t "UrQMD decays", uf u 1:4 w l ls 7 t "UrQMD strings", uf u 1:5 w l ls 8 t "UrQMD other"
 
 set out "Ecm_17_3_ylog.eps"
 set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = 17.3 GeV"
-sf="../smash_runs2/smash_17_3.dat"
-uf="../urqmd_runs2/urqmd_17_3.dat"
+sf=s17dir.cf
+uf=u17dir.cf
 plot sf u 1:2 w l ls 1 t "SMASH elastic", sf u 1:3 w l ls 2 t "SMASH decays", sf u 1:4 w l ls 3 t "SMASH strings", sf u 1:5 w l ls 4 t "SMASH other", uf u 1:2 w l ls 5 t "UrQMD elastic", uf u 1:3 w l ls 6 t "UrQMD decays", uf u 1:4 w l ls 7 t "UrQMD strings", uf u 1:5 w l ls 8 t "UrQMD other"
 
 set out "Ecm_200_ylog.eps"
 set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = 200 GeV"
-sf="../smash_runs2/smash_200.dat"
-uf="../urqmd_runs2/urqmd_200.dat"
+sf=s200dir.cf
+uf=u200dir.cf
 plot sf u 1:2 w l ls 1 t "SMASH elastic", sf u 1:3 w l ls 2 t "SMASH decays", sf u 1:4 w l ls 3 t "SMASH strings", sf u 1:5 w l ls 4 t "SMASH other", uf u 1:2 w l ls 5 t "UrQMD elastic", uf u 1:3 w l ls 6 t "UrQMD decays", uf u 1:4 w l ls 7 t "UrQMD strings", uf u 1:5 w l ls 8 t "UrQMD other"
 
 
@@ -59,24 +73,24 @@ set out "Ecm_8_7.eps"
 set yrange [0.001:250]
 set xrange [-3:100]
 set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = 8.7 GeV"
-sf="../smash_runs2/smash_8_7.dat"
-uf="../urqmd_runs2/urqmd_8_7.dat"
+sf=s8dir.cf
+uf=u8dir.cf
 plot sf u 1:2 w l ls 1 t "SMASH elastic", sf u 1:3 w l ls 2 t "SMASH decays", sf u 1:4 w l ls 3 t "SMASH strings", sf u 1:5 w l ls 4 t "SMASH other", uf u 1:2 w l ls 5 t "UrQMD elastic", uf u 1:3 w l ls 6 t "UrQMD decays", uf u 1:4 w l ls 7 t "UrQMD strings", uf u 1:5 w l ls 8 t "UrQMD other"
 
 set out "Ecm_17_3.eps"
 set yrange [0.001:400]
 set xrange [-3:100]
 set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = 17.3 GeV"
-sf="../smash_runs2/smash_17_3.dat"
-uf="../urqmd_runs2/urqmd_17_3.dat"
+sf=s17dir.cf
+uf=u17dir.cf
 plot sf u 1:2 w l ls 1 t "SMASH elastic", sf u 1:3 w l ls 2 t "SMASH decays", sf u 1:4 w l ls 3 t "SMASH strings", sf u 1:5 w l ls 4 t "SMASH other", uf u 1:2 w l ls 5 t "UrQMD elastic", uf u 1:3 w l ls 6 t "UrQMD decays", uf u 1:4 w l ls 7 t "UrQMD strings", uf u 1:5 w l ls 8 t "UrQMD other"
 
 set out "Ecm_200.eps"
 set yrange [0.001:1000]
 set xrange [-3:150]
 set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = 200 GeV"
-sf="../smash_runs2/smash_200.dat"
-uf="../urqmd_runs2/urqmd_200.dat"
+sf=s200dir.cf
+uf=u200dir.cf
 plot sf u 1:2 w l ls 1 t "SMASH elastic", sf u 1:3 w l ls 2 t "SMASH decays", sf u 1:4 w l ls 3 t "SMASH strings", sf u 1:5 w l ls 4 t "SMASH other", uf u 1:2 w l ls 5 t "UrQMD elastic", uf u 1:3 w l ls 6 t "UrQMD decays", uf u 1:4 w l ls 7 t "UrQMD strings", uf u 1:5 w l ls 8 t "UrQMD other"
 
 set logscale y
@@ -88,19 +102,37 @@ set ls 9 lc "blue" lw 4 dt 2
 
 set out "Ecm_8_7_ylog_total.eps"
 set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = 8.7 GeV"
-sf="../smash_runs2/smash_8_7.dat"
-uf="../urqmd_runs2/urqmd_8_7.dat"
+sf=s8dir.cf
+uf=u8dir.cf
 plot sf u 1:(($2)+($3)+($4)+($5)) w l ls 1 t "SMASH total", uf u 1:(($2)+($3)+($4)+($5)) w l ls 9 t "UrQMD total"
 
 set out "Ecm_17_3_ylog_total.eps"
 set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = 17.3 GeV"
-sf="../smash_runs2/smash_17_3.dat"
-uf="../urqmd_runs2/urqmd_17_3.dat"
+sf=s17dir.cf
+uf=u17dir.cf
 plot sf u 1:(($2)+($3)+($4)+($5)) w l ls 1 t "SMASH total", uf u 1:(($2)+($3)+($4)+($5)) w l ls 9 t "UrQMD total"
 
 set out "Ecm_200_ylog_total.eps"
 set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = 200 GeV"
-sf="../smash_runs2/smash_200.dat"
-uf="../urqmd_runs2/urqmd_200.dat"
+sf=s200dir.cf
+uf=u200dir.cf
 plot sf u 1:(($2)+($3)+($4)+($5)) w l ls 1 t "SMASH total", uf u 1:(($2)+($3)+($4)+($5)) w l ls 9 t "UrQMD total"
 
+set autoscale y
+set ylabel "dN/dt [fm^{-1}]"
+set xlabel "t [fm]"
+set format y "10^{%L}"
+energies="'8_7' '17_3' '200'"
+en_labels="'8.7' '17.3' '200'"
+names="'two_stable' 'one_stable' 'no_stable' 'min_1_antip' 'two_baryons' 'baryon_meson' 'two_mesons' 'two_nucleons' 'nucleon_pion' 'two_pions' 'NNstar'"
+n_labels="'(Mininum) 2 stable particles' '(Mininum) 1 stable particle' 'No stable particles' '(Minimum) 1 antiparticle' '(Minimum) 2 baryons' '(Minimum) 1 baryon and 1 meson' '(Minimum) 2 mesons' '(Minimum) 2 nucleons' '(Minimum) 1 nucleon and 1 pion' '(Minimum) 2 pions' '(Minimum) 1 nucleon and 1 excited nucleon'"
+do for [en=1:3] {
+   sf=sdir.word(energies,en)."/hadron_types.dat"
+   uf=udir.word(energies,en)."/hadron_types.dat"
+   do for [kn=1:words(names)] {
+      set out "Ecm_".word(energies,en)."_".word(names,kn).".eps"
+      set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = ".word(en_labels,en).", ".word(n_labels,kn)
+      indx=kn+1
+      plot sf u 1:indx w l lw 4 lc "blue" dt 1 t "SMASH 2.2", uf u 1:indx w l lw 4 lc "red" dt 2 t "UrQMD 3.4"
+   }
+}
