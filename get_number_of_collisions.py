@@ -105,12 +105,13 @@ def extract_data_smash(ifile):
             continue
         if stuff[1] == "interaction": 
             ptype = int(stuff[13]) 
+            n_incoming = int(stuff[3])
             # we read the time from the first entry of the next line
-            t = float(ifile.readline().split()[0])
+            stuff_N=ifile.readline().split()
+            t = float(stuff_N[0])
             if t >= tmax:
                 continue
             h = int(math.floor((t-tmin)/dt))
-            n_incoming = int(stuff[3])
             # if you change the process types, please, remeber to update the legend in the header of the output file
             if ptype == 1:
                elastic[h] += 1
@@ -127,10 +128,13 @@ def extract_data_smash(ifile):
             detailed[h,ptype_smash[ptype][0]]+=1
 
             had_prop = np.zeros(7,dtype=np.int32)
-            for had in range(n_incoming):
-                stuff = ifile.readline().split()
-                pid = stuff[9]
-                had_prop += get_hadron_info_smash(pid) #the function returns a list which is automatically converted into np array
+            pid = stuff_N[9] # we have already read the first line after the interaction event header to get the collision time
+            had_prop += get_hadron_info_smash(pid) #the function returns a list which is automatically converted into np array
+            if n_incoming > 1:
+                for had in range(n_incoming-1):
+                   stuff_N = ifile.readline().split()
+                   pid = stuff_N[9]
+                   had_prop += get_hadron_info_smash(pid) #the function returns a list which is automatically converted into np array
 
             count_based_on_hadron_property(had_prop,h)
 

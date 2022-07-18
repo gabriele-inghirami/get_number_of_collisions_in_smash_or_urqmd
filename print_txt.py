@@ -108,7 +108,7 @@ outf.write("# 10 dN/dt (Minimum) 1 nucleon and 1 pion\n")
 outf.write("# 11 dN/dt (Minimum) 2 pions\n")
 outf.write("# 12 dN/dt (Minimum) 1 nucleon and 1 excited nucleon\n")
 
-outf.write("# Note: pion- are not considered antiparticles.\n")
+outf.write("# Note: pion- are considered antiparticles.\n")
 outf.write("# Note: Stable particles are: p, n, K, eta, eta', omega, phi, Lambda, Xi, Omega and their antiparticles.\n")
 for h in range(nt):
     outf.write(tf.format(times[h]))
@@ -118,7 +118,6 @@ for h in range(nt):
     outf.write(sp+ff.format(min_one_anti[h]/den))
     outf.write(sp+ff.format(BaBa[h]/den))
     outf.write(sp+ff.format(MeBa[h]/den))
-    outf.write(sp+ff.format(MeMe[h]/den))
     outf.write(sp+ff.format(MeMe[h]/den))
     outf.write(sp+ff.format(NuNu[h]/den))
     outf.write(sp+ff.format(Nupi[h]/den))

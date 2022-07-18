@@ -125,7 +125,7 @@ set format y "10^{%L}"
 energies="'8_7' '17_3' '200'"
 en_labels="'8.7' '17.3' '200'"
 names="'two_stable' 'one_stable' 'no_stable' 'min_1_antip' 'two_baryons' 'baryon_meson' 'two_mesons' 'two_nucleons' 'nucleon_pion' 'two_pions' 'NNstar'"
-n_labels="'(Mininum) 2 stable particles' '(Mininum) 1 stable particle' 'No stable particles' '(Minimum) 1 antiparticle' '(Minimum) 2 baryons' '(Minimum) 1 baryon and 1 meson' '(Minimum) 2 mesons' '(Minimum) 2 nucleons' '(Minimum) 1 nucleon and 1 pion' '(Minimum) 2 pions' '(Minimum) 1 nucleon and 1 excited nucleon'"
+n_labels="'(Mininum) 2 stable particles' '(Mininum) 1 stable particle' 'No stable particles' '(Minimum) 1 antiparticle' '(Minimum) 2 baryons' '(Minimum) 1 baryon and 1 meson' '(Minimum) 2 mesons' '(Minimum) 2 nucleons' '(Minimum) 1 nucleon and 1 pion' '(Minimum) 2 pions' '(Min.) 1 nucleon and 1 excited nucleon'"
 do for [en=1:3] {
    sf=sdir.word(energies,en)."/hadron_types.dat"
    uf=udir.word(energies,en)."/hadron_types.dat"
@@ -133,6 +133,6 @@ do for [en=1:3] {
       set out "Ecm_".word(energies,en)."_".word(names,kn).".eps"
       set title "Pb+Pb, b = 0-3.3 fm, {/Symbol \326}s = ".word(en_labels,en).", ".word(n_labels,kn)
       indx=kn+1
-      plot sf u 1:indx w l lw 4 lc "blue" dt 1 t "SMASH 2.2", uf u 1:indx w l lw 4 lc "red" dt 2 t "UrQMD 3.4"
+      plot sf u 1:indx w l lw 4 lc "red" dt 1 t "SMASH 2.2", uf u 1:indx w l lw 4 lc "blue" dt 2 t "UrQMD 3.4"
    }
 }

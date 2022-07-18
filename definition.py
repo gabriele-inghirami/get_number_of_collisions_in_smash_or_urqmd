@@ -106,8 +106,8 @@ had_prop_dict = {
 
 def get_hadron_info_smash(pdg):
     if (pdg[0] == "-"):
-        is_antiparticle=1
         pdg=pdg[1:]
+        is_antiparticle=1
     else:
         is_antiparticle=0
     len_pdg=len(pdg)
@@ -133,7 +133,7 @@ def get_hadron_info_smash(pdg):
         else:
             kind=2
 
-    if (abs(B)>0):
+    if B>0:
         is_baryon=1
         is_meson=0
     else:
@@ -158,7 +158,7 @@ def get_hadron_info_smash(pdg):
     else:
         is_N_star=0
 
-    if abs(int(pdg)) in stable_smash:
+    if int_pdg in stable_smash:
         is_stable=1
     else:
         is_stable=0
