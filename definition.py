@@ -114,7 +114,6 @@ def get_hadron_info_smash(pdg):
     int_pdg=int(pdg)
     q=[0,0,0]
     if(len_pdg==2): #it is a lepton
-        Jtot=2 
         B=0
         s=0
         kind=3
@@ -148,7 +147,7 @@ def get_hadron_info_smash(pdg):
     else:
         is_pion=0
 
-    if int_pdg in (2112,2212):
+    if ((int_pdg in (2112,2212)) and (is_antiparticle==0)):
         is_nucleon=1
     else:
         is_nucleon=0
@@ -197,7 +196,7 @@ def get_hadron_info_urqmd(pid,charge):
         is_baryon=0
         is_meson=1
 
-    if abs(int(pid)) in stable_urqmd:
+    if abs_pid in stable_urqmd:
         is_stable=1
     else:
         is_stable=0
