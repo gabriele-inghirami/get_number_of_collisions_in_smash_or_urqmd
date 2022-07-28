@@ -1,11 +1,24 @@
-## Purpose:
+## Contents:
+
+- get_number_of_collisions.py extracts the number of collisions vs time (see dedicated paragrahs _main program_ and _syntax_)
+- combine_results.py combines homogeneous results (see dedicate paragraph _Combining the results_)
+- definition.py auxiliary python code with definitions and helper functions
+- diff_results.py computes the differences between two sets of results
+- LICENSE
+- print_diff_txt.py converts output of diff_results.py into human readable text format suitable for gnuplot
+- print_txt.py converts output of get_number_of_collisions.py into human readable text format suitable for gnuplot
+- README.md
+- scripts_and_configs
+
+
+## Main program: get_number_of_collisions.py
 
 This progam reads the hadron data in the SMASH or UrQMD collision files, extracts
 the time and the type of collisions and saves a histogram on a file.
 The program automatically detects if the file is a .f15 UrQMD or
 an oscar2013 SMASH collision file.
 
-## Syntax:
+### Syntax:
 
 `python3 get_number_of_collisions.py <output file name> <output file header info> <collision file 1> [collision file 2] ...`
 
@@ -15,14 +28,63 @@ The script automatically recognizes if the collision files have been generated b
 A short description of the content of the output file is provided in its header.
 
 ### Combining the results
-It is possible to combine the results of two or more results file created by get_number_of_collisions.py with:
+It is possible to combine the results of two or more result files created by get_number_of_collisions.py with:
 
-`python3 ./combine_results.py <outputfile> <inputfile 1> <inputfile 2> ... [inputfile n]`
+`python3 combine_results.py <outputfile> <inputfile 1> <inputfile 2> ... [inputfile n]`
 
-## Plots
+### Converting into txt format
+It is possible to convert the results into human readable txt format with:
 
-The gnuplot script (tested with Gnuplot 5.4) make_plots.gp is an example of plotting script.
+`python3 print_txt.py <pickled data results file> <output directory>`
 
-## Config files and slurm scripts
+In output directory will be saved three files:
+- collision_types.dat (dN/dt of collisions by kind: elastic, decays, strings, other)
+- hadron_types.dat (dN/dt of collisions by colliding ion species: 2 baryons, 2 mesons...)
+- process_types.dat (dN/dt of collisions by process type: soft strings, hard string, elastic...)
+The contents of the files are described in their headers.
 
-The directory *slurm_scripts_and_configs* contains example confiuration files and slurm scripts (used on the Virgo cluster at GSI).
+## Config files, slurm and gnuplot scripts
+
+The directory *scripts_and_configs* contains example configuration files and slurm scripts (used on the Virgo cluster at GSI),
+both for SMASH and UrQMD. The subdirectory _gnuplot_ contains gnuplot scripts (tested with v. 5.4.4) to make plots from postprocessed results in txt format.
+
+## Workflow example:
+
+In the Virgo cluster:
+`./launch_runs_smash.sh`
+this starts the jobs. slurm is used in a script invoked by this script (e.g. run_smash.bash)
+
+When they are over:
+`sbatch postproc_smash.sh`
+this executes get_number_of_collision.py and produces in output several pickle files.
+
+When finished, we can first start a container (or use a VAE, like Debian or CentOS):
+`singularity shell $CON`
+and then combine the results, e.g.:
+`python3 combine_results.py smash_17_3.pickle smash17_p*le`
+(this operation must be repeated for all cases or included in a script)
+
+We use ftp or rsync to copy the final pickle data results in a local directory.
+
+In the local computer:
+we convert the pickled data into text format:
+`python3 print_txt.py smash_17_3.pickle 17_3`
+
+we make the plots:
+`gnuplot make_plots.gp`
+we convert the plots into pdf:
+`for i in *.eps; do ps2pdf -dEPSCrop $i; done`
+`rm *.eps` (optional)
+we convert from pdf to jpg (optional, useful to display plots in a github issue):
+`for i in *.pdf; do convert -density 300 -quality 95% $i ${i%%pdf}jpg; done`
+
+### Differences between two different sets of results
+
+If we want to compare the differences betweent two different kinds of results:
+`id=8_7; python3 diff_results.py diff_smash_std_smash_-1/$id.pickle smash_all_data/smash_$id.pickle smash_all_data_-1_option/smash_$id.pickle`
+
+we convert the results into text format:
+`python3 print_diff_txt.py 8_7.pickle 8_7`
+
+we make the plots:
+`gnuplot make_plots_comp.gp`

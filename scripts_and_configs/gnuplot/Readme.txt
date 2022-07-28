@@ -1,0 +1,3 @@
+- make_plots.gp makes plots of normal runs, with x range from -3 to 200 fm and plots also in y log scale
+- make_plots_zoomed.gp makes plots of normal runs, in linear scale, with x range from 0 to 20 fm
+- make_plots_comp.gp makes plots of the differences between two sets of run, in linear scale, up to 40 fm.
