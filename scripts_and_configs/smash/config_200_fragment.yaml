@@ -1,0 +1,33 @@
+Version: 1.8 # minimal SMASH version to use with this config file
+
+Logging:
+    default: INFO
+
+General:
+    Modus:          Collider
+    Time_Step_Mode: Fixed
+    Delta_Time:     0.1
+    End_Time:       200.0
+    Randomseed:     -1
+    Nevents:        120
+
+Collision_Term:
+    Strings: True
+    String_Parameters:
+        Separate_Fragment_Baryon: False
+
+Output:
+    Collisions:
+        Format:          ["Oscar2013"]
+
+Modi:
+    Collider:
+        Projectile:
+            Particles: {2212: 82, 2112: 126} #Lead208
+        Target:
+            Particles: {2212: 82, 2112: 126} #Lead208
+
+        Sqrtsnn: 200
+        Fermi_Motion: "frozen"
+        Impact:
+            Range: [0,3.3]

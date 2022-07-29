@@ -3,9 +3,9 @@
 - get_number_of_collisions.py extracts the number of collisions vs time (see dedicated paragrahs _main program_ and _syntax_)
 - combine_results.py combines homogeneous results (see dedicate paragraph _Combining the results_)
 - definition.py auxiliary python code with definitions and helper functions
-- diff_results.py computes the differences between two sets of results
+- diff_or_ratio_results.py computes the differences or the ratios between two sets of results (option inside the code)
 - LICENSE
-- print_diff_txt.py converts output of diff_results.py into human readable text format suitable for gnuplot
+- print_diff_or_ratio_txt.py converts output of diff_or_ratio_results.py into human readable text format suitable for gnuplot
 - print_txt.py converts output of get_number_of_collisions.py into human readable text format suitable for gnuplot
 - README.md
 - scripts_and_configs
@@ -81,10 +81,10 @@ we convert from pdf to jpg (optional, useful to display plots in a github issue)
 ### Differences between two different sets of results
 
 If we want to compare the differences betweent two different kinds of results:
-`id=8_7; python3 diff_results.py diff_smash_std_smash_-1/$id.pickle smash_all_data/smash_$id.pickle smash_all_data_-1_option/smash_$id.pickle`
+`id=8_7; python3 diff_or_ratio_results.py diff_smash_std_smash_-1/$id.pickle smash_all_data/smash_$id.pickle smash_all_data_-1_option/smash_$id.pickle`
 
 we convert the results into text format:
-`python3 print_diff_txt.py 8_7.pickle 8_7`
+`python3 print_diff_or_ratio_txt.py 8_7.pickle 8_7`
 
 we make the plots:
 `gnuplot make_plots_comp.gp`
