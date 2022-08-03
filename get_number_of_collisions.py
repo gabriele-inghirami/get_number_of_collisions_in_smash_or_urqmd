@@ -38,6 +38,9 @@ Nupi = np.zeros(nt,dtype=np.float64)
 pipi = np.zeros(nt,dtype=np.float64)
 NuNustar = np.zeros(nt,dtype=np.float64)
 
+tot_hadrons = np.zeros(nt,dtype=np.float64)
+collision_energy = np.zeros(nt,dtype=np.float64)
+
 file_kind="unset"
 
 # if we want to print debugging messages or not (0=none,1=advancement infos)
@@ -106,6 +109,8 @@ def extract_data_smash(ifile):
         if stuff[1] == "interaction": 
             ptype = int(stuff[13]) 
             n_incoming = int(stuff[3])
+            n_outgoing = int(stuff[4])
+            new_particles = n_outgoing - n_incoming
             # we read the time from the first entry of the next line
             stuff_N=ifile.readline().split()
             t = float(stuff_N[0])
@@ -127,16 +132,23 @@ def extract_data_smash(ifile):
 
             detailed[h,ptype_smash[ptype][0]]+=1
 
+            tot_hadrons[h] += new_particles
+
             had_prop = np.zeros(7,dtype=np.int32)
             pid = stuff_N[9] # we have already read the first line after the interaction event header to get the collision time
+            tot4m = np.array(float(stuff_N[4:8]))
             had_prop += get_hadron_info_smash(pid) #the function returns a list which is automatically converted into np array
             if n_incoming > 1:
                 for had in range(n_incoming-1):
                    stuff_N = ifile.readline().split()
                    pid = stuff_N[9]
+                   tot4m += np.array(float(stuff_N[4:8]))
                    had_prop += get_hadron_info_smash(pid) #the function returns a list which is automatically converted into np array
 
             count_based_on_hadron_property(had_prop,h)
+            coll_energy = tot4m[0]**2-tot4m[1]**2-tot4m[2]**2-tot4m[3]**2
+
+            collision_energy[h] += coll_energy
 
         if stuff[1] == "event":
             events_in_file += 1
@@ -155,6 +167,9 @@ def extract_data_urqmd(ifile):
         ptype = int(stuff[2]) 
         t = float(stuff[4])
         n_incoming = int(stuff[0])
+        n_outgoing = int(stuff[1])
+        new_particles = n_outgoing - n_incoming
+        coll_energy = float(stuff[5])
         if t >= tmax:
             continue
         h = int(math.floor((t-tmin)/dt))
@@ -170,6 +185,8 @@ def extract_data_urqmd(ifile):
 
         detailed[h,ptype_urqmd[ptype][0]]+=1
 
+        tot_hadrons[h] += new_particles
+
         had_prop = np.zeros(7,dtype=np.int32)
         for had in range(n_incoming):
             stuff = ifile.readline().split()
@@ -178,6 +195,8 @@ def extract_data_urqmd(ifile):
             had_prop += get_hadron_info_urqmd(pid,charge) #the function returns a list which is automatically converted into np array
 
         count_based_on_hadron_property(had_prop,h)
+
+        collision_energy[h] += coll_energy
 
     return events_in_file 
 
@@ -233,4 +252,4 @@ if verbose > 0:
     print("Warning, you are advised to take note of the commit number of the repository that you used to produce these results.")
 with open(outfile,"wb") as outf:
     pickle.dump((label_header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
-                 min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar),outf)
+                 min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,tot_hadrons,collision_energy),outf)
