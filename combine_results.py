@@ -30,7 +30,7 @@ with open(sys.argv[2],"rb") as infile:
     data = pickle.load(infile)
 
 label_header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
-        min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar = data[:]
+        min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,tot_hadrons,cross_sections = data[:]
 data=None
 
 for fi in range(3,N_args):
@@ -44,7 +44,7 @@ for fi in range(3,N_args):
         continue
     label_header_new,file_kind_new,events_new,dt_new,times_new,elastic_new,decays_new,strings_new,other_new,\
     detailed_new,two_stable_new,one_stable_new,no_stable_new,min_one_anti_new,BaBa_new,MeBa_new,MeMe_new,\
-    NuNu_new,Nupi_new,pipi_new,NuNustar_new = data[:]
+    NuNu_new,Nupi_new,pipi_new,NuNustar_new,tot_hadrons_new,cross_sections = data[:]
     data = None
     if ((label_header_new != label_header) or (file_kind_new != file_kind) or (dt_new != dt) or\
         (times_new.all() != times.all())):
@@ -68,12 +68,14 @@ for fi in range(3,N_args):
     Nupi += Nupi_new
     pipi += pipi_new
     NuNustar += NuNustar_new
+    tot_hadrons += tot_hadrons_new
+    cross_sections += cross_sections_new
 
 if verbose > 0:
     print("Writing the results in "+outputfile)
     print("Warning, you are advised to take note of the commit number of the repository that you used to produce these results.")
 with open(outputfile,"wb") as outf:
     pickle.dump((label_header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
-                 min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar),outf)
+                 min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,tot_hadrons,cross_sections),outf)
 
 

@@ -5,8 +5,7 @@
 - definition.py auxiliary python code with definitions and helper functions
 - diff_or_ratio_results.py computes the differences or the ratios between two sets of results (option inside the code)
 - LICENSE
-- print_diff_or_ratio_txt.py converts output of diff_or_ratio_results.py into human readable text format suitable for gnuplot
-- print_txt.py converts output of get_number_of_collisions.py into human readable text format suitable for gnuplot
+- print_txt.py converts output of get_number_of_collisions.py or diff_or_ratio_results.py into human readable text format suitable for gnuplot
 - README.md
 - scripts_and_configs
 
@@ -42,6 +41,7 @@ In output directory will be saved three files:
 - hadron_types.dat (dN/dt of collisions by colliding ion species: 2 baryons, 2 mesons...)
 - process_types.dat (dN/dt of collisions by process type: soft strings, hard string, elastic...)
 The contents of the files are described in their headers.
+print_txt.py is able to automatically recognize whether the input file was produced by diff_or_ratio_results.py or get_number_of_collisions.py.
 
 ## Config files, slurm and gnuplot scripts
 
@@ -84,7 +84,7 @@ If we want to compare the differences betweent two different kinds of results:
 `id=8_7; python3 diff_or_ratio_results.py diff_smash_std_smash_-1/$id.pickle smash_all_data/smash_$id.pickle smash_all_data_-1_option/smash_$id.pickle`
 
 we convert the results into text format:
-`python3 print_diff_or_ratio_txt.py 8_7.pickle 8_7`
+`python3 print_txt.py 8_7.pickle 8_7`
 
 we make the plots:
 `gnuplot make_plots_comp.gp`

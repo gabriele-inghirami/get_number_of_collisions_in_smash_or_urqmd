@@ -37,64 +37,91 @@ if os.path.exists(outdir):
 with open(infile,"rb") as inputfile:
     data = pickle.load(inputfile)
 
+if len(data) == 31:
 
-label_header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
-        min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar = data[:]
+    header,dt,times,elastic,decays,strings,other,two_stable,one_stable,no_stable,\
+        min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,total_hadrons,\
+        tot_cross_sections_elastic,tot_cross_sections_decays,tot_cross_sections_strings,tot_cross_sections_other,\
+        par_cross_sections_elastic,par_cross_sections_decays,par_cross_sections_strings,par_cross_sections_other,\
+        coll_energy_elastic,coll_energy_decays,coll_energy_strings,coll_energy_other\
+        = data[:]
+    diff_ratio_kind == True
+    den=1
+else:
+    header,file_kind,events,dt,times,elastic,decays,strings,other,two_stable,one_stable,no_stable,\
+        min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,total_hadrons,\
+        tot_cross_sections_elastic,tot_cross_sections_decays,tot_cross_sections_strings,tot_cross_sections_other,\
+        par_cross_sections_elastic,par_cross_sections_decays,par_cross_sections_strings,par_cross_sections_other,\
+        coll_energy_elastic,coll_energy_decays,coll_energy_strings,coll_energy_other\
+        = data[:]
+    diff_ratio_kind == False
+    den=dt*events
     
 nt = len(times)
 
 # now we print the results
 os.mkdir(outdir) # in the case of already existing directory, we would have stopped at the beginning
 collision_type_outfile=outdir+"/collision_types.dat"
-den=dt*events
 if verbose > 0:
     print("Writing the results of collision types in the file "+collision_type_outfile)
 outf = open(collision_type_outfile,"w")
-outf.write("# "+label_header+"\n")
-outf.write("# Data from "+file_kind+" simulations\n")
-outf.write("# Number of events: "+str(events)+"\n")
-outf.write("# Process types considered: \n")
-if file_kind == "smash":
-    outf.write("# elastic: 1  *  decays: 5  *  strings: >=41,<=46\n")
-elif file_kind == "urqmd":
-    outf.write("# elastic: 13,17,19,22,26,38  *  decays: 20  *  strings: 15,23,24,27,28\n")
-outf.write("# columns: 1 time [fm]     2 dN/dt elastic     3 dN/dt decays     4 dN/dt strings     6 dN/dt other\n")
+if diff_ratio_kind:
+    outf.write(header)
+    outf.write("# SMASH: elastic: 1  *  decays: 5  *  strings: >=41,<=46\n")
+    outf.write("# UrQMD elastic: 13,17,19,22,26,38  *  decays: 20  *  strings: 15,23,24,27,28\n")
+    outf.write("# columns: 1 time [fm]     2 dN/dt elastic     3 dN/dt decays     4 dN/dt strings     6 dN/dt other\n")
+else:
+    outf.write("# "+header+"\n")
+    outf.write("# Data from "+file_kind+" simulations\n")
+    outf.write("# Number of events: "+str(events)+"\n")
+    outf.write("# Process types considered: \n")
+    if file_kind == "smash":
+        outf.write("# elastic: 1  *  decays: 5  *  strings: >=41,<=46\n")
+    elif file_kind == "urqmd":
+        outf.write("# elastic: 13,17,19,22,26,38  *  decays: 20  *  strings: 15,23,24,27,28\n")
+
 for h in range(nt):
     outf.write(tf.format(times[h])+sp+ff.format(elastic[h]/den)+sp+ff.format(decays[h]/den)+sp+ff.format(strings[h]/den)+sp+ff.format(other[h]/den)+"\n")
 outf.close()
 
-process_type_outfile=outdir+"/process_types.dat"
-if verbose > 0:
-    print("Writing the results of process types in the file "+process_type_outfile)
-outf = open(process_type_outfile,"w")
-outf.write("# "+label_header+"\n")
-outf.write("# Data from "+file_kind+" simulations\n")
-outf.write("# Number of events: "+str(events)+"\n")
-outf.write("# Columns:\n# 1 time [fm]\n")
-if file_kind == "smash":
-    for v in ptype_smash.values():
-        outf.write("# "+'{:2d}'.format(v[0])+" dN/dt"+v[1]+"\n")
-elif file_kind == "urqmd":
-    for v in ptype_urqmd.values():
-        outf.write("# "+'{:2d}'.format(v[0])+" dN/dt"+v[1]+"\n")
-for h in range(nt):
-    outf.write(tf.format(times[h]))
+if (not diff_ratio_kind):
+    process_type_outfile=outdir+"/process_types.dat"
+    if verbose > 0:
+        print("Writing the results of process types in the file "+process_type_outfile)
+    outf = open(process_type_outfile,"w")
+    outf.write("# "+header+"\n")
+    outf.write("# Data from "+file_kind+" simulations\n")
+    outf.write("# Number of events: "+str(events)+"\n")
+    outf.write("# Columns:\n# 1 time [fm]\n")
     if file_kind == "smash":
         for v in ptype_smash.values():
-            outf.write(sp+ff.format(detailed[h,v[0]]/den))
-    else:
+            outf.write("# "+'{:2d}'.format(v[0])+" dN/dt"+v[1]+"\n")
+    elif file_kind == "urqmd":
         for v in ptype_urqmd.values():
-            outf.write(sp+ff.format(detailed[h,v[0]]/den))
-    outf.write("\n")
-outf.close()
+            outf.write("# "+'{:2d}'.format(v[0])+" dN/dt"+v[1]+"\n")
+    for h in range(nt):
+        outf.write(tf.format(times[h]))
+        if file_kind == "smash":
+            for v in ptype_smash.values():
+                outf.write(sp+ff.format(detailed[h,v[0]]/den))
+        else:
+            for v in ptype_urqmd.values():
+                outf.write(sp+ff.format(detailed[h,v[0]]/den))
+        outf.write("\n")
+    outf.close()
+
 
 hadron_type_outfile=outdir+"/hadron_types.dat"
 if verbose > 0:
     print("Writing the results of hadron types in the file "+hadron_type_outfile)
 outf = open(hadron_type_outfile,"w")
-outf.write("# "+label_header+"\n")
-outf.write("# Data from "+file_kind+" simulations\n")
-outf.write("# Number of events: "+str(events)+"\n")
+if diff_ratio_kind:
+    outf.write(header)
+else:
+    outf.write("# "+header+"\n")
+    outf.write("# Data from "+file_kind+" simulations\n")
+    outf.write("# Number of events: "+str(events)+"\n")
+
 outf.write("# Columns:\n# 1 time [fm]\n")
 outf.write("# 2 dN/dt (Mininum) 2 stable particles\n")
 outf.write("# 3 dN/dt (Mininum) 1 stable particle\n")
@@ -123,5 +150,92 @@ for h in range(nt):
     outf.write(sp+ff.format(Nupi[h]/den))
     outf.write(sp+ff.format(pipi[h]/den))
     outf.write(sp+ff.format(NuNustar[h]/den))
+    outf.write("\n")
+outf.close()
+
+if diff_ratio_kind:
+    den_all = 1.
+    den_elastic = 1.
+    den_decays = 1.
+    den_strings = 1.
+    den_other = 1.
+else:
+    den_all = elastic + decays + strings + other
+    den_elastic = elastic
+    den_decays = decays
+    den_strings = strings
+    den_other = other
+
+den_all[abs(den_all) < 1e-14] = 1. 
+den_elastic[abs(den_elastic) < 1e-14] = 1.
+den_decays[abs(den_decays) < 1e-14] = 1.
+den_strings[abs(den_strings) < 1e-14] = 1.
+den_other[abs(den_other) < 1e-14] = 1.
+
+total_hadrons_outfile=outdir+"/average_total_hadrons.dat"
+if verbose > 0:
+    print("Writing the results of average total hadrons in the system in the file "+total_hadrons_outfile)
+outf = open(total_hadrons_outfile,"w")
+if diff_ratio_kind:
+    outf.write(header)
+else:
+    outf.write("# "+header+"\n")
+outf.write("# Columns:\n# 1 time [fm]\n")
+outf.write("# 2 average total number of hadrons in the system in the time interval t-dt/2, t+dt/2\n")
+for h in range(nt):
+    outf.write(tf.format(times[h]))
+    outf.write(sp+ff.format(total_hadrons[h])/den_all[h])
+    outf.write("\n")
+outf.close()
+
+collision_energies_outfile=outdir+"/average_collision_energies.dat"
+if verbose > 0:
+    print("Writing the results of average collision energies in the file "+collision_energies_outfile)
+outf = open(collision_energies_outfile,"w")
+if diff_ratio_kind:
+    outf.write(header)
+else:
+    outf.write("# "+header+"\n")
+outf.write("# Columns:\n# 1 time [fm]\n")
+outf.write("# 2 average collision energy for elastic interactions\n")
+outf.write("# 3 average collision energy for decays interactions\n")
+outf.write("# 4 average collision energy for strings interactions\n")
+outf.write("# 5 average collision energy for other interactions\n")
+for h in range(nt):
+    outf.write(tf.format(times[h]))
+    outf.write(sp+ff.format(coll_energy_elastic[h]/den_elastic[h]))
+    outf.write(sp+ff.format(coll_energy_decays[h])/den_decays[h])
+    outf.write(sp+ff.format(coll_energy_strings[h])/den_strings[h])
+    outf.write(sp+ff.format(coll_energy_other[h]/den_other[h]))
+    outf.write("\n")
+outf.close()
+
+cross_sections_outfile=outdir+"/cross_sections.dat"
+if verbose > 0:
+    print("Writing the results of average cross sections in the file "+cross_sections_outfile)
+outf = open(cross_sections_outfile,"w")
+if diff_ratio_kind:
+    outf.write(header)
+else:
+    outf.write("# "+header+"\n")
+outf.write("# Columns:\n# 1 time [fm]\n")
+outf.write("# 2 average total cross section for elastic interactions\n")
+outf.write("# 3 average total cross section for decays interactions\n")
+outf.write("# 4 average total cross section for strings interactions\n")
+outf.write("# 5 average total cross section for other interactions\n")
+outf.write("# 6 average partial cross section for elastic interactions\n")
+outf.write("# 7 average partial cross section for decays interactions\n")
+outf.write("# 8 average partial cross section for strings interactions\n")
+outf.write("# 9 average partial cross section for other interactions\n")
+for h in range(nt):
+    outf.write(tf.format(times[h]))
+    outf.write(sp+ff.format(tot_cross_sections_elastic[h]/den_elastic[h]))
+    outf.write(sp+ff.format(tot_cross_sections_decays[h])/den_decays[h])
+    outf.write(sp+ff.format(tot_cross_sections_strings[h])/den_strings[h])
+    outf.write(sp+ff.format(tot_cross_sections_other[h])/den_other[h])
+    outf.write(sp+ff.format(par_cross_sections_elastic[h])/den_elastic[h])
+    outf.write(sp+ff.format(par_cross_sections_decays[h])/den_decays[h])
+    outf.write(sp+ff.format(par_cross_sections_strings[h])/den_strings[h])
+    outf.write(sp+ff.format(par_cross_sections_other[h])/den_other[h])
     outf.write("\n")
 outf.close()

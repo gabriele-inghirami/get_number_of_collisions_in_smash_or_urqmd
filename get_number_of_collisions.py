@@ -26,6 +26,22 @@ strings = np.zeros(nt,dtype=np.float64)
 elastic = np.zeros(nt,dtype=np.float64)
 other = np.zeros(nt,dtype=np.float64)
 
+# indexes for the cross section array
+# the approach (1 multidimensionl array) is different from the
+# separated arrays for the number of collisions, but it has been
+# planned and implemented later
+# event type indexes
+k_ela=0 # elastic
+k_dec=2 # decays
+k_str=2 # strings
+k_oth=3 # other
+# quantity indexes
+k_tot=0 # total cross section
+k_par=1 # partial cross section
+k_cen=2 # collision energy
+# first index: time, second index: event type, third index: quantity
+cross_sections = np.zeros((nt,4,3),dtype=np.float64)
+
 two_stable = np.zeros(nt,dtype=np.float64)
 one_stable = np.zeros(nt,dtype=np.float64)
 no_stable = np.zeros(nt,dtype=np.float64)
@@ -39,7 +55,6 @@ pipi = np.zeros(nt,dtype=np.float64)
 NuNustar = np.zeros(nt,dtype=np.float64)
 
 tot_hadrons = np.zeros(nt,dtype=np.float64)
-collision_energy = np.zeros(nt,dtype=np.float64)
 
 file_kind="unset"
 
@@ -109,8 +124,10 @@ def extract_data_smash(ifile):
         if stuff[1] == "interaction": 
             ptype = int(stuff[13]) 
             n_incoming = int(stuff[3])
-            n_outgoing = int(stuff[4])
+            n_outgoing = int(stuff[5])
             new_particles = n_outgoing - n_incoming
+            total_cross_section = float(stuff[9])
+            partial_cross_section = float(stuff[11])
             # we read the time from the first entry of the next line
             stuff_N=ifile.readline().split()
             t = float(stuff_N[0])
@@ -120,15 +137,19 @@ def extract_data_smash(ifile):
             # if you change the process types, please, remeber to update the legend in the header of the output file
             if ptype == 1:
                elastic[h] += 1
+               k_idx = k_ela
             elif ptype == 5:
                decays[h] += 1
+               k_idx = k_dec
             elif ((ptype >= 41) and (ptype <= 46)): #we do not consider case 47, FailedString
                strings[h] += 1
+               k_idx = k_str
             elif (ptype == 47): #we print a warning in case of FailedString
                if verbose > 0:
                    print("Warning, failed string collision.")
             else:
                other[h] += 1
+               k_idx = k_oth
 
             detailed[h,ptype_smash[ptype][0]]+=1
 
@@ -148,7 +169,10 @@ def extract_data_smash(ifile):
             count_based_on_hadron_property(had_prop,h)
             coll_energy = tot4m[0]**2-tot4m[1]**2-tot4m[2]**2-tot4m[3]**2
 
-            collision_energy[h] += coll_energy
+            cross_sections[h,k_idx,k_tot] += total_cross_section
+            cross_sections[h,k_idx,k_par] += partial_cross_section
+            cross_sections[h,k_idx,k_cen] += coll_energy
+
 
         if stuff[1] == "event":
             events_in_file += 1
@@ -170,18 +194,24 @@ def extract_data_urqmd(ifile):
         n_outgoing = int(stuff[1])
         new_particles = n_outgoing - n_incoming
         coll_energy = float(stuff[5])
+        total_cross_section = float(stuff[6])
+        partial_cross_section = float(stuff[7])
         if t >= tmax:
             continue
         h = int(math.floor((t-tmin)/dt))
         # if you change the process types, please, remeber to update the legend in the header of the output file
         if ((ptype == 13) or (ptype == 17) or (ptype == 19) or (ptype == 22) or (ptype == 26) or (ptype == 38)):
             elastic[h] += 1
+            k_idx = k_ela
         elif ptype == 20:
             decays[h] += 1
+            k_idx = k_dec
         elif ((ptype == 15) or (ptype == 23) or (ptype == 24) or (ptype == 27) or (ptype == 28)): 
             strings[h] += 1
+            k_idx = k_str
         else:
             other[h] += 1
+            k_idx = k_oth
 
         detailed[h,ptype_urqmd[ptype][0]]+=1
 
@@ -196,7 +226,9 @@ def extract_data_urqmd(ifile):
 
         count_based_on_hadron_property(had_prop,h)
 
-        collision_energy[h] += coll_energy
+        cross_sections[h,k_idx,k_tot] += total_cross_section
+        cross_sections[h,k_idx,k_par] += partial_cross_section
+        cross_sections[h,k_idx,k_cen] += coll_energy
 
     return events_in_file 
 
@@ -252,4 +284,4 @@ if verbose > 0:
     print("Warning, you are advised to take note of the commit number of the repository that you used to produce these results.")
 with open(outfile,"wb") as outf:
     pickle.dump((label_header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
-                 min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,tot_hadrons,collision_energy),outf)
+                 min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,tot_hadrons,cross_sections),outf)
