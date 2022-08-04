@@ -44,7 +44,7 @@ for fi in range(3,N_args):
         continue
     label_header_new,file_kind_new,events_new,dt_new,times_new,elastic_new,decays_new,strings_new,other_new,\
     detailed_new,two_stable_new,one_stable_new,no_stable_new,min_one_anti_new,BaBa_new,MeBa_new,MeMe_new,\
-    NuNu_new,Nupi_new,pipi_new,NuNustar_new,tot_hadrons_new,cross_sections = data[:]
+    NuNu_new,Nupi_new,pipi_new,NuNustar_new,tot_hadrons_new,cross_sections_new = data[:]
     data = None
     if ((label_header_new != label_header) or (file_kind_new != file_kind) or (dt_new != dt) or\
         (times_new.all() != times.all())):
