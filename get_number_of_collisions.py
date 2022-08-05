@@ -32,7 +32,7 @@ other = np.zeros(nt,dtype=np.float64)
 # planned and implemented later
 # event type indexes
 k_ela=0 # elastic
-k_dec=2 # decays
+k_dec=1 # decays
 k_str=2 # strings
 k_oth=3 # other
 # quantity indexes

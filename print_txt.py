@@ -165,6 +165,8 @@ else:
     den_strings[abs(den_strings) < 1e-14] = 1.
     den_other[abs(den_other) < 1e-14] = 1.
 
+print(str(den_elastic))
+
 created_hadrons_outfile=outdir+"/average_created_hadrons.dat"
 if verbose > 0:
     print("Writing the results of average created hadrons in the system in the file "+created_hadrons_outfile)
@@ -177,14 +179,14 @@ outf.write("# Columns:\n# 1 time [fm]\n")
 outf.write("# 2 average created number of hadrons in the system in the time interval t-dt/2, t+dt/2\n")
 for h in range(nt):
     outf.write(tf.format(times[h]))
-    outf.write(sp+ff.format(created_hadrons[h])/events)
+    outf.write(sp+ff.format(created_hadrons[h]/events))
     outf.write("\n")
 outf.close()
 
 # indexes for the cross section array
 # event type indexes
 k_ela=0 # elastic
-k_dec=2 # decays
+k_dec=1 # decays
 k_str=2 # strings
 k_oth=3 # other
 # quantity indexes
@@ -197,9 +199,9 @@ tot_cross_sections_decays = cross_sections[:,k_dec,k_tot]
 tot_cross_sections_strings = cross_sections[:,k_str,k_tot]
 tot_cross_sections_other = cross_sections[:,k_oth,k_tot]
 par_cross_sections_elastic = cross_sections[:,k_ela,k_par]
-par_cross_sections_decays = cross_sections[:,k_dec,k_partot]
-par_cross_sections_strings = cross_sections[:,k_str,k_partot]
-par_cross_sections_other = cross_sections[:,k_oth,k_partot]
+par_cross_sections_decays = cross_sections[:,k_dec,k_par]
+par_cross_sections_strings = cross_sections[:,k_str,k_par]
+par_cross_sections_other = cross_sections[:,k_oth,k_par]
 coll_energy_elastic = cross_sections[:,k_ela,k_cen]
 coll_energy_decays = cross_sections[:,k_dec,k_cen]
 coll_energy_strings = cross_sections[:,k_str,k_cen]
@@ -221,8 +223,8 @@ outf.write("# 5 average collision energy for other interactions\n")
 for h in range(nt):
     outf.write(tf.format(times[h]))
     outf.write(sp+ff.format(coll_energy_elastic[h]/den_elastic[h]))
-    outf.write(sp+ff.format(coll_energy_decays[h])/den_decays[h])
-    outf.write(sp+ff.format(coll_energy_strings[h])/den_strings[h])
+    outf.write(sp+ff.format(coll_energy_decays[h]/den_decays[h]))
+    outf.write(sp+ff.format(coll_energy_strings[h]/den_strings[h]))
     outf.write(sp+ff.format(coll_energy_other[h]/den_other[h]))
     outf.write("\n")
 outf.close()
@@ -247,12 +249,12 @@ outf.write("# 9 average partial cross section for other interactions\n")
 for h in range(nt):
     outf.write(tf.format(times[h]))
     outf.write(sp+ff.format(tot_cross_sections_elastic[h]/den_elastic[h]))
-    outf.write(sp+ff.format(tot_cross_sections_decays[h])/den_decays[h])
-    outf.write(sp+ff.format(tot_cross_sections_strings[h])/den_strings[h])
-    outf.write(sp+ff.format(tot_cross_sections_other[h])/den_other[h])
-    outf.write(sp+ff.format(par_cross_sections_elastic[h])/den_elastic[h])
-    outf.write(sp+ff.format(par_cross_sections_decays[h])/den_decays[h])
-    outf.write(sp+ff.format(par_cross_sections_strings[h])/den_strings[h])
-    outf.write(sp+ff.format(par_cross_sections_other[h])/den_other[h])
+    outf.write(sp+ff.format(tot_cross_sections_decays[h]/den_decays[h]))
+    outf.write(sp+ff.format(tot_cross_sections_strings[h]/den_strings[h]))
+    outf.write(sp+ff.format(tot_cross_sections_other[h]/den_other[h]))
+    outf.write(sp+ff.format(par_cross_sections_elastic[h]/den_elastic[h]))
+    outf.write(sp+ff.format(par_cross_sections_decays[h]/den_decays[h]))
+    outf.write(sp+ff.format(par_cross_sections_strings[h]/den_strings[h]))
+    outf.write(sp+ff.format(par_cross_sections_other[h]/den_other[h]))
     outf.write("\n")
 outf.close()
