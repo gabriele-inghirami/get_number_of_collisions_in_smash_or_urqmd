@@ -165,8 +165,6 @@ else:
     den_strings[abs(den_strings) < 1e-14] = 1.
     den_other[abs(den_other) < 1e-14] = 1.
 
-print(str(den_elastic))
-
 created_hadrons_outfile=outdir+"/average_created_hadrons.dat"
 if verbose > 0:
     print("Writing the results of average created hadrons in the system in the file "+created_hadrons_outfile)
