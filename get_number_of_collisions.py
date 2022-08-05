@@ -158,17 +158,17 @@ def extract_data_smash(ifile):
 
             had_prop = np.zeros(7,dtype=np.int32)
             pid = stuff_N[9] # we have already read the first line after the interaction event header to get the collision time
-            tot4m = np.array(np.float64(stuff_N[4:8]))
+            tot4m = np.array(np.float64(stuff_N[5:9]))
             had_prop += get_hadron_info_smash(pid) #the function returns a list which is automatically converted into np array
             if n_incoming > 1:
                 for had in range(n_incoming-1):
                    stuff_N = ifile.readline().split()
                    pid = stuff_N[9]
-                   tot4m += np.array(np.float64(stuff_N[4:8]))
+                   tot4m += np.array(np.float64(stuff_N[5:9]))
                    had_prop += get_hadron_info_smash(pid) #the function returns a list which is automatically converted into np array
 
             count_based_on_hadron_property(had_prop,h)
-            coll_energy = tot4m[0]**2-tot4m[1]**2-tot4m[2]**2-tot4m[3]**2
+            coll_energy = math.sqrt(tot4m[0]**2-tot4m[1]**2-tot4m[2]**2-tot4m[3]**2)
 
             cross_sections[h,k_idx,k_tot] += total_cross_section
             cross_sections[h,k_idx,k_par] += partial_cross_section
