@@ -54,7 +54,7 @@ Nupi = np.zeros(nt,dtype=np.float64)
 pipi = np.zeros(nt,dtype=np.float64)
 NuNustar = np.zeros(nt,dtype=np.float64)
 
-tot_hadrons = np.zeros(nt,dtype=np.float64)
+created_hadrons = np.zeros(nt,dtype=np.float64)
 
 file_kind="unset"
 
@@ -116,6 +116,7 @@ def check_file_type(inputfile,file_kind):
 
 def extract_data_smash(ifile):
     events_in_file = 0
+    hadrons_created_in_event = np.zeros(nt,dtype=np.int32)
     # the file should be already open
     for line in ifile:
         stuff=line.split()
@@ -153,7 +154,7 @@ def extract_data_smash(ifile):
 
             detailed[h,ptype_smash[ptype][0]]+=1
 
-            tot_hadrons[h] += new_particles
+            hadrons_created_in_event[h] += new_particles
 
             had_prop = np.zeros(7,dtype=np.int32)
             pid = stuff_N[9] # we have already read the first line after the interaction event header to get the collision time
@@ -176,10 +177,21 @@ def extract_data_smash(ifile):
 
         if stuff[1] == "event":
             events_in_file += 1
+            created_hadrons[0] += hadrons_created_in_event[0]
+            for h in range(1,nt):
+                created_hadrons[h] += np.sum(hadrons_created_in_event[:h])
+            hadrons_created_in_event[:] = 0
+    
+    created_hadrons[0] += hadrons_created_in_event[0]
+    for h in range(1,nt):
+        created_hadrons[h] += np.sum(hadrons_created_in_event[:h])
+    hadrons_created_in_event[:] = 0
+
     return events_in_file
 
 def extract_data_urqmd(ifile):
     events_in_file = 1 #the event flag is "-1", but it has been already read by check_file_type
+    hadrons_created_in_event = np.zeros(nt,dtype=np.int32)
     # the file should be already open
     for line in ifile:
         stuff = line.split()
@@ -187,6 +199,10 @@ def extract_data_urqmd(ifile):
             continue
         if stuff[0] == "-1":
             events_in_file += 1
+            created_hadrons[0] += hadrons_created_in_event[0]
+            for h in range(1,nt):
+                created_hadrons[h] += np.sum(hadrons_created_in_event[:h])
+            hadrons_created_in_event[:] = 0
             continue
         ptype = int(stuff[2]) 
         t = float(stuff[4])
@@ -215,7 +231,7 @@ def extract_data_urqmd(ifile):
 
         detailed[h,ptype_urqmd[ptype][0]]+=1
 
-        tot_hadrons[h] += new_particles
+        hadrons_created_in_event[h] += new_particles
 
         had_prop = np.zeros(7,dtype=np.int32)
         for had in range(n_incoming):
@@ -229,6 +245,11 @@ def extract_data_urqmd(ifile):
         cross_sections[h,k_idx,k_tot] += total_cross_section
         cross_sections[h,k_idx,k_par] += partial_cross_section
         cross_sections[h,k_idx,k_cen] += coll_energy
+
+    created_hadrons[0] += hadrons_created_in_event[0]
+    for h in range(1,nt):
+        created_hadrons[h] += np.sum(hadrons_created_in_event[:h])
+    hadrons_created_in_event[:] = 0
 
     return events_in_file 
 
@@ -284,4 +305,4 @@ if verbose > 0:
     print("Warning, you are advised to take note of the commit number of the repository that you used to produce these results.")
 with open(outfile,"wb") as outf:
     pickle.dump((label_header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
-                 min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,tot_hadrons,cross_sections),outf)
+                 min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,created_hadrons,cross_sections),outf)

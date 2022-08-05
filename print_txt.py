@@ -40,21 +40,18 @@ with open(infile,"rb") as inputfile:
 if len(data) == 31:
 
     header,dt,times,elastic,decays,strings,other,two_stable,one_stable,no_stable,\
-        min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,total_hadrons,\
+        min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,created_hadrons,\
         tot_cross_sections_elastic,tot_cross_sections_decays,tot_cross_sections_strings,tot_cross_sections_other,\
         par_cross_sections_elastic,par_cross_sections_decays,par_cross_sections_strings,par_cross_sections_other,\
         coll_energy_elastic,coll_energy_decays,coll_energy_strings,coll_energy_other\
         = data[:]
-    diff_ratio_kind == True
+    diff_ratio_kind = True
     den=1
 else:
-    header,file_kind,events,dt,times,elastic,decays,strings,other,two_stable,one_stable,no_stable,\
-        min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,total_hadrons,\
-        tot_cross_sections_elastic,tot_cross_sections_decays,tot_cross_sections_strings,tot_cross_sections_other,\
-        par_cross_sections_elastic,par_cross_sections_decays,par_cross_sections_strings,par_cross_sections_other,\
-        coll_energy_elastic,coll_energy_decays,coll_energy_strings,coll_energy_other\
+    header,file_kind,events,dt,times,elastic,decays,strings,other,detailed,two_stable,one_stable,no_stable,\
+        min_one_anti,BaBa,MeBa,MeMe,NuNu,Nupi,pipi,NuNustar,created_hadrons,cross_sections\
         = data[:]
-    diff_ratio_kind == False
+    diff_ratio_kind = False
     den=dt*events
     
 nt = len(times)
@@ -154,39 +151,59 @@ for h in range(nt):
 outf.close()
 
 if diff_ratio_kind:
-    den_all = 1.
-    den_elastic = 1.
-    den_decays = 1.
-    den_strings = 1.
-    den_other = 1.
+    den_elastic = np.ones_like(elastic)
+    den_decays = np.ones_like(decays)
+    den_strings = np.ones_like(strings)
+    den_other = np.ones_like(other)
 else:
-    den_all = elastic + decays + strings + other
     den_elastic = elastic
     den_decays = decays
     den_strings = strings
     den_other = other
+    den_elastic[abs(den_elastic) < 1e-14] = 1.
+    den_decays[abs(den_decays) < 1e-14] = 1.
+    den_strings[abs(den_strings) < 1e-14] = 1.
+    den_other[abs(den_other) < 1e-14] = 1.
 
-den_all[abs(den_all) < 1e-14] = 1. 
-den_elastic[abs(den_elastic) < 1e-14] = 1.
-den_decays[abs(den_decays) < 1e-14] = 1.
-den_strings[abs(den_strings) < 1e-14] = 1.
-den_other[abs(den_other) < 1e-14] = 1.
-
-total_hadrons_outfile=outdir+"/average_total_hadrons.dat"
+created_hadrons_outfile=outdir+"/average_created_hadrons.dat"
 if verbose > 0:
-    print("Writing the results of average total hadrons in the system in the file "+total_hadrons_outfile)
-outf = open(total_hadrons_outfile,"w")
+    print("Writing the results of average created hadrons in the system in the file "+created_hadrons_outfile)
+outf = open(created_hadrons_outfile,"w")
 if diff_ratio_kind:
     outf.write(header)
 else:
     outf.write("# "+header+"\n")
 outf.write("# Columns:\n# 1 time [fm]\n")
-outf.write("# 2 average total number of hadrons in the system in the time interval t-dt/2, t+dt/2\n")
+outf.write("# 2 average created number of hadrons in the system in the time interval t-dt/2, t+dt/2\n")
 for h in range(nt):
     outf.write(tf.format(times[h]))
-    outf.write(sp+ff.format(total_hadrons[h])/den_all[h])
+    outf.write(sp+ff.format(created_hadrons[h])/events)
     outf.write("\n")
 outf.close()
+
+# indexes for the cross section array
+# event type indexes
+k_ela=0 # elastic
+k_dec=2 # decays
+k_str=2 # strings
+k_oth=3 # other
+# quantity indexes
+k_tot=0 # total cross section
+k_par=1 # partial cross section
+k_cen=2 # collision energy
+
+tot_cross_sections_elastic = cross_sections[:,k_ela,k_tot]
+tot_cross_sections_decays = cross_sections[:,k_dec,k_tot]
+tot_cross_sections_strings = cross_sections[:,k_str,k_tot]
+tot_cross_sections_other = cross_sections[:,k_oth,k_tot]
+par_cross_sections_elastic = cross_sections[:,k_ela,k_par]
+par_cross_sections_decays = cross_sections[:,k_dec,k_partot]
+par_cross_sections_strings = cross_sections[:,k_str,k_partot]
+par_cross_sections_other = cross_sections[:,k_oth,k_partot]
+coll_energy_elastic = cross_sections[:,k_ela,k_cen]
+coll_energy_decays = cross_sections[:,k_dec,k_cen]
+coll_energy_strings = cross_sections[:,k_str,k_cen]
+coll_energy_other = cross_sections[:,k_oth,k_cen]
 
 collision_energies_outfile=outdir+"/average_collision_energies.dat"
 if verbose > 0:

@@ -111,9 +111,6 @@ else:
    header="# Ratio between "+header1+" and " +header2+"\n"
 header+="# stored in files "+sys.argv[1]+" and "+sys.argv[2]+"\n"
 
-all1 = elastic1 + decays1 + strings1 + other1
-all2 = elastic2 + decays2 + strings2 + other2
-
 # if the counting at the denominator is 0 also the numerator should be 0, so it safe to set it to 1
 for i in range(nt_new):
     i1 = i + i1s
@@ -126,8 +123,6 @@ for i in range(nt_new):
         strings1[i1] = 1
     if other1[i1] == 0:
         other1[i1] = 1
-    if all1[i1] == 0:
-        all1[i1] = 1
     if elastic2[i2] == 0:
         elastic2[i2] = 1
     if decays2[i2] == 0:
@@ -136,8 +131,6 @@ for i in range(nt_new):
         strings2[i2] = 1
     if other2[i2] == 0:
         other2[i2] = 1
-    if all2[i2] == 0:
-        all2[i2] = 1
 
 tot_cross_sections_elastic1 = cross_sections1[i1s:i1e,k_ela,k_tot]/elastic1[i1s:i1e]
 tot_cross_sections_elastic2 = cross_sections2[i2s:i2e,k_ela,k_tot]/elastic2[i2s:i2e]
@@ -181,7 +174,7 @@ if (operation == "difference"):
     pipi = pipi1[i1s:i1e]/den1 - pipi2[i2s:i2e]/den2
     NuNustar = NuNustar1[i1s:i1e]/den1 - NuNustar2[i2s:i2e]/den2
     
-    total_hadrons = total_hadrons1[i1s:i1e]/all1 - total_hadrons2[i2s:i2e]/all2
+    total_hadrons = total_hadrons1[i1s:i1e]/events1 - total_hadrons2[i2s:i2e]/events2
 
     tot_cross_sections_elastic = tot_cross_sections_elastic1 - tot_cross_sections_elastic2
     tot_cross_sections_decays = tot_cross_sections_decays1 - tot_cross_sections_decays2
@@ -227,7 +220,7 @@ else:
     pipi[abs(pipi) == np.inf] = 0
     NuNustar[abs(NuNustar) == np.inf] = 0
 
-    total_hadrons = (total_hadrons1[i1s:i1e]/all1) / (total_hadrons2[i2s:i2e]/all2)
+    total_hadrons = (total_hadrons1[i1s:i1e]/events1) / (total_hadrons2[i2s:i2e]/events2)
 
     tot_cross_sections_elastic = tot_cross_sections_elastic1 / tot_cross_sections_elastic2
     tot_cross_sections_decays = tot_cross_sections_decays1 / tot_cross_sections_decays2
