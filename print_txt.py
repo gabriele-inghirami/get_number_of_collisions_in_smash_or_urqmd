@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
-# it reads the hadron data in the smash collision files, extracts
-# the time and the type of collisions and saves the results as .pickle darchive 
-# the program automatically detects if the file is
-# a .f15 urqmd or oscar2013 smash collision file
+# it converts into text format the output of get_number_of_collisions.py
+# and combine_avg_red_factor.py
 
 import math
 import numpy as np

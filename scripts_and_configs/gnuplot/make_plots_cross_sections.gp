@@ -1,6 +1,6 @@
 set term pos eps enh col font "Times, 22"
 
-set key top right Left font ",14"
+set key top left Left font ",12"
 
 set ls 1 lc "red" lw 4 dt 1
 set ls 2 lc "orange" lw 4 dt 1
@@ -16,7 +16,6 @@ lb="'SMASH elastic' 'SMASH decays' 'SMASH strings' 'SMASH other' 'UrQMD elastic'
 
 set xrange[0.:25]
 set mxtics 4
-set key bottom center
 
 sdir="../smash_cross_sections/"
 udir="../urqmd_cross_sections/"

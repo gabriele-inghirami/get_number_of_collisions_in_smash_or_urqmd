@@ -88,3 +88,11 @@ we convert the results into text format:
 
 we make the plots:
 `gnuplot make_plots_comp.gp`
+
+## Average UrQMD reduction factor
+
+- get_urmqd_avg_reduction_factor.py reads the reduction factor printed in UrQMD .f14 extended (option `cto 41 1`) output files and
+saves the sum of the entries and the number of entries at fixed timesteps withint a certain time user chosen (by editing the script) range. 
+- combine_avg_red_factor.py combines the results of the previous script (again in python pickle format)
+- print_reduction_factor_txt.py converts the pickle output format of the previous scripts into ascii text, suitable (e.g.) for gnuplot 
+- scripts_and_configs/gnuplot/make_plot_urqmd_reduction_factor.gp makes a plot using gnuplot (tested with v. 5.4.4)
