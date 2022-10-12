@@ -6,6 +6,7 @@ They should work, but they have not been tested, so a few fixes might be necessa
 Index of the files:
 - archive_urqmd.sh slurm script to compress UrQMD output data
 - inputfile_17_3, inputfile_200, inputfile_8_7 config files
+- 
 - launch_runs_urqmd.sh bash script that uses run_urqmd.bash to start the simulations
 - postproc_urqmd.sh slurm sbatch script to postprocess the results with get_number_of_collisions.py
 - Readme.txt

@@ -8,8 +8,8 @@
 #SBATCH --mem-per-cpu=3G
 #SBATCH --cpus-per-task=1
 #SBATCH --time=0-7:00:00
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=inghirami@fias.uni-frankfurt.de
+##SBATCH --mail-type=ALL
+##SBATCH --mail-user=UNCOMMENT AND WRITE YOUR EMAIL ADDRESS HERE IF YOU WANT BE NOTIFIED BY EMAIL
 
 container=$LH/smash-2.2-jammy.sif
 

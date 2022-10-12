@@ -8,12 +8,11 @@
 #SBATCH --mem-per-cpu=3G
 #SBATCH --cpus-per-task=1
 #SBATCH --time=0-7:00:00
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=inghirami@fias.uni-frankfurt.de
+##SBATCH --mail-type=ALL
+##SBATCH --mail-user= INSERT YOUR EMAIL and UNCOMMENT if you wish to get informed by email
 
 #Syntax: sbatch --job-name=<name of the job> run_urqmd.bash <suffix of the desired config file> <additional label for multiple runs>
 #Syntax example: sbatch bash --job-name=urqmd_17_3 run_urqmd.bash 17_3 A
-
 
 iterations=1
 

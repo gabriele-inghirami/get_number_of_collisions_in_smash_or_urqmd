@@ -8,8 +8,8 @@
 #SBATCH --mem-per-cpu=3G
 #SBATCH --cpus-per-task=1
 #SBATCH --time=0-7:00:00
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=inghirami@fias.uni-frankfurt.de
+##SBATCH --mail-type=ALL
+##SBATCH --mail-user= UNCOMMENT AND WRITE YOUR EMAIL ADDRESS HERE IF YOU WANT BE NOTIFIED BY EMAIL
 
 #Syntax: sbatch --job-name=<name of the job> run_smash.bash <suffix of the desired config file> <additional label for multiple runs>
 #Syntax example: sbatch --job-name=smash_17_3 run_smash.bash 17_3 A
